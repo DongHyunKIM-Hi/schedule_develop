@@ -34,9 +34,10 @@ public class ScheduleService {
         return ScheduleCreateResponse.from(dto);
     }
 
-    public ScheduleUpdateResponse updateSchedule(long scheduleId, ScheduleUpdateRequest request) {
+    public ScheduleUpdateResponse updateSchedule(long userId, long scheduleId, ScheduleUpdateRequest request) {
 
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
+        isOwner(userId, schedule.getWriter().getId());
         schedule.update(request);
         scheduleRepository.save(schedule);
         ScheduleDto dto = ScheduleDto.from(schedule);
@@ -44,9 +45,10 @@ public class ScheduleService {
         return ScheduleUpdateResponse.from(dto);
     }
 
-    public ScheduleDeleteResponse deleteSchedule(long scheduleId) {
+    public ScheduleDeleteResponse deleteSchedule(long userId, long scheduleId) {
 
         Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
+        isOwner(userId, schedule.getWriter().getId());
         scheduleRepository.delete(schedule);
         ScheduleDto dto = ScheduleDto.from(schedule);
 
@@ -59,5 +61,11 @@ public class ScheduleService {
         ScheduleDto dto = ScheduleDto.from(schedule);
 
         return ScheduleReadResponse.from(dto);
+    }
+
+    void isOwner(long nowLoginUserId, long scheduleOwnerId) {
+        if (nowLoginUserId != scheduleOwnerId) {
+            throw new IllegalArgumentException("현재 로그인한 사용자와 수정 및 삭제 하려는 대상의 소유자가 일치하지 않습니다.");
+        }
     }
 }

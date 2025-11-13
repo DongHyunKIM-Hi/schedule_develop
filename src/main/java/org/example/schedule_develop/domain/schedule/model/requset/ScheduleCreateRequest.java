@@ -1,6 +1,5 @@
 package org.example.schedule_develop.domain.schedule.model.requset;
 
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ScheduleCreateRequest {
 
-    private String writer;
     private String title;
     private String content;
 

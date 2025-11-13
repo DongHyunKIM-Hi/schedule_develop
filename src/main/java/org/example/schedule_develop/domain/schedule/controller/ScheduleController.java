@@ -1,6 +1,7 @@
 package org.example.schedule_develop.domain.schedule.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.schedule_develop.common.model.SessionUser;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreateRequest;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleUpdateRequest;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleCreateResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @RestController
 @RequestMapping("/schedules")
@@ -25,10 +27,11 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     // create
-    @PostMapping("/{userId}")
-    public ResponseEntity<ScheduleCreateResponse> createSchedule(@PathVariable long userId,
+    @PostMapping
+    public ResponseEntity<ScheduleCreateResponse> createSchedule(
+        @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
         @RequestBody ScheduleCreateRequest request) {
-        return ResponseEntity.ok(scheduleService.createSchedule(userId, request));
+        return ResponseEntity.ok(scheduleService.createSchedule(sessionUser.getUserId(), request));
     }
 
 
@@ -40,14 +43,17 @@ public class ScheduleController {
 
     // update
     @PutMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleUpdateResponse> updateSchedule(@PathVariable Long scheduleId,
+    public ResponseEntity<ScheduleUpdateResponse> updateSchedule(
+        @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long scheduleId,
         @RequestBody ScheduleUpdateRequest request) {
-        return ResponseEntity.ok(scheduleService.updateSchedule(scheduleId, request));
+        return ResponseEntity.ok(scheduleService.updateSchedule(sessionUser.getUserId(), scheduleId, request));
     }
 
     // delete
     @GetMapping("/{scheduleId}/delete")
-    public ResponseEntity<ScheduleDeleteResponse> deleteSchedule(@PathVariable Long scheduleId) {
-        return ResponseEntity.ok(scheduleService.deleteSchedule(scheduleId));
+    public ResponseEntity<ScheduleDeleteResponse> deleteSchedule(
+        @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
+        @PathVariable Long scheduleId) {
+        return ResponseEntity.ok(scheduleService.deleteSchedule(sessionUser.getUserId(), scheduleId));
     }
 }
