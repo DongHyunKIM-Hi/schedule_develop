@@ -14,11 +14,13 @@ public class UserDto {
     private Long id;
     private String username;
     private String email;
+    private String password;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public static UserDto from(User user) {
-        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt(), user.getModifiedAt());
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getCreatedAt(),
+            user.getModifiedAt());
     }
 
 }

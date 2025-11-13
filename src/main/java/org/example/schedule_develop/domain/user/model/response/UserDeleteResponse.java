@@ -14,11 +14,18 @@ public class UserDeleteResponse {
     private Long id;
     private String username;
     private String email;
+    private String password;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public static UserDeleteResponse from(UserDto dto) {
-        return new UserDeleteResponse(dto.getId(), dto.getUsername(), dto.getEmail(), dto.getCreatedAt(),
-            dto.getModifiedAt());
+        return new UserDeleteResponse(
+            dto.getId(),
+            dto.getUsername(),
+            dto.getEmail(),
+            dto.getPassword(),
+            dto.getCreatedAt(),
+            dto.getModifiedAt()
+        );
     }
 }

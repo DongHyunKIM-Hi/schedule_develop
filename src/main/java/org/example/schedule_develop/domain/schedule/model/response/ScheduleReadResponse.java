@@ -21,7 +21,14 @@ public class ScheduleReadResponse {
     private LocalDateTime modifiedAt;
 
     public static ScheduleReadResponse from(ScheduleDto dto) {
-        return new ScheduleReadResponse(dto.getId(), dto.getWriter(), dto.getTitle(), dto.getContent(), dto.getCreatedAt(), dto.getModifiedAt());
+        return new ScheduleReadResponse(
+            dto.getId(),
+            dto.getWriter(),
+            dto.getTitle(),
+            dto.getContent(),
+            dto.getCreatedAt(),
+            dto.getModifiedAt()
+        );
     }
 
 }

@@ -13,8 +13,14 @@ public class UserCreateResponse {
     private Long id;
     private String username;
     private String email;
+    private String password;
 
     public static UserCreateResponse from(UserDto dto) {
-        return new UserCreateResponse(dto.getId(), dto.getUsername(), dto.getEmail());
+        return new UserCreateResponse(
+            dto.getId(),
+            dto.getUsername(),
+            dto.getEmail(),
+            dto.getPassword()
+        );
     }
 }

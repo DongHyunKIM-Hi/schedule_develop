@@ -20,7 +20,14 @@ public class ScheduleDto {
     private LocalDateTime modifiedAt;
 
     public static ScheduleDto from(Schedule schedule) {
-        return new ScheduleDto(schedule.getId(), UserDto.from(schedule.getWriter()), schedule.getTitle(), schedule.getContent(), schedule.getCreatedAt(), schedule.getModifiedAt());
+        return new ScheduleDto(
+            schedule.getId(),
+            UserDto.from(schedule.getWriter()),
+            schedule.getTitle(),
+            schedule.getContent(),
+            schedule.getCreatedAt(),
+            schedule.getModifiedAt()
+        );
     }
 
 }

@@ -21,7 +21,13 @@ public class ScheduleDeleteResponse {
     private LocalDateTime modifiedAt;
 
     public static ScheduleDeleteResponse from(ScheduleDto dto) {
-        return new ScheduleDeleteResponse(dto.getId(), dto.getWriter(), dto.getTitle(), dto.getContent(),
-            dto.getCreatedAt(), dto.getModifiedAt());
+        return new ScheduleDeleteResponse(
+            dto.getId(),
+            dto.getWriter(),
+            dto.getTitle(),
+            dto.getContent(),
+            dto.getCreatedAt(),
+            dto.getModifiedAt()
+        );
     }
 }

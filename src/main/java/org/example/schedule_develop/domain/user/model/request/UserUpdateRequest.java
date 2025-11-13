@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UserUpdateRequest {
+
     private String email;
     private String username;
+    private String password;
 }

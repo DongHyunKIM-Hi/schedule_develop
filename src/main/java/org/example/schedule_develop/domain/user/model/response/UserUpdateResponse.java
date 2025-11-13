@@ -14,11 +14,18 @@ public class UserUpdateResponse {
     private Long id;
     private String username;
     private String email;
+    private String password;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     public static UserUpdateResponse from(UserDto dto) {
-        return new UserUpdateResponse(dto.getId(), dto.getUsername(), dto.getEmail(), dto.getCreatedAt(),
-            dto.getModifiedAt());
+        return new UserUpdateResponse(
+            dto.getId(),
+            dto.getUsername(),
+            dto.getEmail(),
+            dto.getPassword(),
+            dto.getCreatedAt(),
+            dto.getModifiedAt()
+        );
     }
 }
