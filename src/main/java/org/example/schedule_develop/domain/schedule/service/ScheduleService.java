@@ -1,17 +1,19 @@
 package org.example.schedule_develop.domain.schedule.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.schedule_develop.common.entity.Schedule;
+import org.example.schedule_develop.common.entity.User;
 import org.example.schedule_develop.domain.schedule.model.dto.ScheduleDto;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreateRequest;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleUpdateRequest;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleCreateResponse;
-import org.example.schedule_develop.domain.schedule.model.response.ScheduleDeletedResponse;
+import org.example.schedule_develop.domain.schedule.model.response.ScheduleDeleteResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleReadResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleUpdateResponse;
 import org.example.schedule_develop.domain.schedule.repository.ScheduleRepository;
+import org.example.schedule_develop.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Transactional
@@ -19,19 +21,22 @@ import org.springframework.stereotype.Service;
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
-    public ScheduleCreateResponse createSchedule(ScheduleCreateRequest request) {
+    public ScheduleCreateResponse createSchedule(long userId, ScheduleCreateRequest request) {
 
-        Schedule schedule = new Schedule(request.getWriter(), request.getTitle(), request.getContent());
+        User user = userRepository.findById(userId).orElseThrow();
+
+        Schedule schedule = new Schedule(user, request.getTitle(), request.getContent());
         scheduleRepository.save(schedule);
         ScheduleDto dto = ScheduleDto.from(schedule);
 
         return ScheduleCreateResponse.from(dto);
     }
 
-    public ScheduleUpdateResponse updateSchedule(long id, ScheduleUpdateRequest request) {
+    public ScheduleUpdateResponse updateSchedule(long scheduleId, ScheduleUpdateRequest request) {
 
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow();
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
         schedule.update(request);
         scheduleRepository.save(schedule);
         ScheduleDto dto = ScheduleDto.from(schedule);
@@ -39,17 +44,18 @@ public class ScheduleService {
         return ScheduleUpdateResponse.from(dto);
     }
 
-    public ScheduleDeletedResponse deleteSchedule(long id) {
+    public ScheduleDeleteResponse deleteSchedule(long scheduleId) {
 
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow();
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
         scheduleRepository.delete(schedule);
         ScheduleDto dto = ScheduleDto.from(schedule);
 
-        return ScheduleDeletedResponse.from(dto);
+        return ScheduleDeleteResponse.from(dto);
     }
 
-    public ScheduleReadResponse getSchedule(long id) {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow();
+    @Transactional(readOnly = true)
+    public ScheduleReadResponse getSchedule(long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
         ScheduleDto dto = ScheduleDto.from(schedule);
 
         return ScheduleReadResponse.from(dto);

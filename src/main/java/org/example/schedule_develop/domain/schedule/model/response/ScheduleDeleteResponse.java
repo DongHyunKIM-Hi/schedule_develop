@@ -5,21 +5,23 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.schedule_develop.domain.schedule.model.dto.ScheduleDto;
+import org.example.schedule_develop.domain.user.model.dto.UserDto;
 
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleDeletedResponse {
+public class ScheduleDeleteResponse {
 
     private Long id;
-    private String writer;
+    private UserDto writer;
     private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    public static ScheduleDeletedResponse from(ScheduleDto dto) {
-        return new ScheduleDeletedResponse(dto.getId(), dto.getWriter(), dto.getTitle(), dto.getContent(), dto.getCreatedAt(), dto.getModifiedAt());
+    public static ScheduleDeleteResponse from(ScheduleDto dto) {
+        return new ScheduleDeleteResponse(dto.getId(), dto.getWriter(), dto.getTitle(), dto.getContent(),
+            dto.getCreatedAt(), dto.getModifiedAt());
     }
 }

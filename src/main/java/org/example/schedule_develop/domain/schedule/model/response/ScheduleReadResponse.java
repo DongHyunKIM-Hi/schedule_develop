@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.schedule_develop.domain.schedule.model.dto.ScheduleDto;
+import org.example.schedule_develop.domain.user.model.dto.UserDto;
 
 
 @Getter
@@ -13,7 +14,7 @@ import org.example.schedule_develop.domain.schedule.model.dto.ScheduleDto;
 public class ScheduleReadResponse {
 
     private Long id;
-    private String writer;
+    private UserDto writer;
     private String title;
     private String content;
     private LocalDateTime createdAt;
