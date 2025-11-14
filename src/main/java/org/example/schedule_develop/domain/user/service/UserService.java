@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.schedule_develop.common.entity.User;
 import org.example.schedule_develop.common.exception.CustomException;
 import org.example.schedule_develop.common.model.SessionUser;
+import org.example.schedule_develop.common.utils.PasswordEncoder;
 import org.example.schedule_develop.domain.user.model.dto.UserDto;
 import org.example.schedule_develop.domain.user.model.request.LoginRequest;
 import org.example.schedule_develop.domain.user.model.request.UserCreateRequest;
@@ -26,10 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserCreateResponse createUser(UserCreateRequest request) {
 
-        User user = new User(request.getUsername(), request.getEmail(), request.getPassword());
+        User user = new User(request.getUsername(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
         UserDto dto = UserDto.from(user);
 
@@ -73,9 +75,10 @@ public class UserService {
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new CustomException(NOT_VALID_LOGIN));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new CustomException(NOT_VALID_LOGIN);
         }
+
         return new SessionUser(user.getId(), user.getEmail());
     }
 
