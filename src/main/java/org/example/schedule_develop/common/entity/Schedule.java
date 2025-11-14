@@ -1,12 +1,16 @@
 package org.example.schedule_develop.common.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +30,9 @@ public class Schedule extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User writer;
 
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
     private String title;
 
     private String content;
@@ -39,6 +46,16 @@ public class Schedule extends BaseEntity {
     public void update(ScheduleUpdateRequest request) {
         this.title = request.getTitle() != null ? request.getTitle() : this.title;
         this.content = request.getContent() != null ? request.getContent() : this.content;
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setSchedule(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setSchedule(null);
     }
 
 }

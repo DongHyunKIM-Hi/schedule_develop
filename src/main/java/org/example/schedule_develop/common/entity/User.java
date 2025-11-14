@@ -1,5 +1,6 @@
 package org.example.schedule_develop.common.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    @Column(unique = true)
     private String email;
     private String password;
 
@@ -31,8 +33,7 @@ public class User extends BaseEntity {
 
     public void update(UserUpdateRequest request) {
         this.username = request.getUsername() != null ? request.getUsername() : this.username;
-        this.email = request.getEmail() != null ? request.getEmail() : this.email;
-
+        this.password = request.getPassword() != null ? request.getPassword() : this.password;
     }
 
 }

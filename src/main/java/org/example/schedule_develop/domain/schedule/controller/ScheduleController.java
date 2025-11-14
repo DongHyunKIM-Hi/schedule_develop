@@ -14,6 +14,7 @@ import org.example.schedule_develop.domain.schedule.model.response.ScheduleReadR
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleUpdateResponse;
 import org.example.schedule_develop.domain.schedule.service.ScheduleService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,6 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    // create
     @PostMapping
     public ResponseEntity<ScheduleCreateResponse> createSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
@@ -41,14 +41,11 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.createSchedule(sessionUser.getUserId(), request));
     }
 
-
-    // read
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleReadResponse> getSchedule(@PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.getSchedule(scheduleId));
     }
 
-    // update
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleUpdateResponse> updateSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long scheduleId,
@@ -59,18 +56,16 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.updateSchedule(sessionUser.getUserId(), scheduleId, request));
     }
 
-    // delete
-    @GetMapping("/{scheduleId}/delete")
+    @DeleteMapping("/{scheduleId}")
     public ResponseEntity<ScheduleDeleteResponse> deleteSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
         @PathVariable Long scheduleId) {
-        
+
         checkLogin(sessionUser);
 
         return ResponseEntity.ok(scheduleService.deleteSchedule(sessionUser.getUserId(), scheduleId));
     }
-
-
+    
     private void checkLogin(SessionUser sessionUser) {
         if (sessionUser == null) {
             throw new CustomException(NOT_AUTHENTICATED);

@@ -1,5 +1,6 @@
 package org.example.schedule_develop.domain.user.service;
 
+import static org.example.schedule_develop.common.exception.ErrorMessage.DUPLICATE_EMAIL;
 import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_FOUND_USER;
 import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_VALID_LOGIN;
 import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_VALID_OWNER;
@@ -30,6 +31,10 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserCreateResponse createUser(UserCreateRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomException(DUPLICATE_EMAIL);
+        }
 
         User user = new User(request.getUsername(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
