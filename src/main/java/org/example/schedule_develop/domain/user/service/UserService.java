@@ -1,7 +1,12 @@
 package org.example.schedule_develop.domain.user.service;
 
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_FOUND_USER;
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_VALID_LOGIN;
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_VALID_OWNER;
+
 import lombok.RequiredArgsConstructor;
 import org.example.schedule_develop.common.entity.User;
+import org.example.schedule_develop.common.exception.CustomException;
 import org.example.schedule_develop.common.model.SessionUser;
 import org.example.schedule_develop.domain.user.model.dto.UserDto;
 import org.example.schedule_develop.domain.user.model.request.LoginRequest;
@@ -33,7 +38,7 @@ public class UserService {
 
     public UserDeleteResponse deleteUser(long nowLoginUserId, long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(NOT_FOUND_USER));
         isOwner(nowLoginUserId, user.getId());
         userRepository.delete(user);
         UserDto dto = UserDto.from(user);
@@ -43,7 +48,7 @@ public class UserService {
 
     public UserUpdateResponse updateUser(long nowLoginUserId, long userId, UserUpdateRequest request) {
 
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(NOT_FOUND_USER));
         isOwner(nowLoginUserId, user.getId());
         user.update(request);
         userRepository.save(user);
@@ -54,7 +59,9 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserReadResponse getUser(long userId) {
-        User user = userRepository.findById(userId).orElseThrow();
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
         UserDto dto = UserDto.from(user);
 
         return UserReadResponse.from(dto);
@@ -62,17 +69,21 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public SessionUser login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+
         if (!user.getPassword().equals(request.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(NOT_VALID_LOGIN);
         }
         return new SessionUser(user.getId(), user.getEmail());
     }
 
 
     void isOwner(long nowLoginUserId, long userId) {
+        
         if (nowLoginUserId != userId) {
-            throw new IllegalArgumentException("현재 로그인한 사용자와 수정 및 삭제 하려는 대상의 소유자가 일치하지 않습니다.");
+            throw new CustomException(NOT_VALID_OWNER);
         }
     }
 }

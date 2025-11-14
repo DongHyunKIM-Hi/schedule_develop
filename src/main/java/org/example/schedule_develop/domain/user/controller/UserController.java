@@ -1,6 +1,7 @@
 package org.example.schedule_develop.domain.user.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.schedule_develop.common.model.SessionUser;
 import org.example.schedule_develop.domain.user.model.request.LoginRequest;
@@ -36,7 +37,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserCreateResponse> createUser(@RequestBody UserCreateRequest request) {
+    public ResponseEntity<UserCreateResponse> createUser(@Valid @RequestBody UserCreateRequest request) {
         return ResponseEntity.ok(userService.createUser(request));
     }
 
@@ -63,7 +64,7 @@ public class UserController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser
         , HttpSession session) {
-        
+
         if (sessionUser == null) {
             return ResponseEntity.badRequest().build();
         }

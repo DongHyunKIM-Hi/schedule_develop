@@ -1,8 +1,13 @@
 package org.example.schedule_develop.domain.schedule.service;
 
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_FOUND_SCHEDULE;
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_FOUND_USER;
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_VALID_OWNER;
+
 import lombok.RequiredArgsConstructor;
 import org.example.schedule_develop.common.entity.Schedule;
 import org.example.schedule_develop.common.entity.User;
+import org.example.schedule_develop.common.exception.CustomException;
 import org.example.schedule_develop.domain.schedule.model.dto.ScheduleDto;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreateRequest;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleUpdateRequest;
@@ -25,7 +30,8 @@ public class ScheduleService {
 
     public ScheduleCreateResponse createSchedule(long userId, ScheduleCreateRequest request) {
 
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
 
         Schedule schedule = new Schedule(user, request.getTitle(), request.getContent());
         scheduleRepository.save(schedule);
@@ -36,7 +42,8 @@ public class ScheduleService {
 
     public ScheduleUpdateResponse updateSchedule(long userId, long scheduleId, ScheduleUpdateRequest request) {
 
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new CustomException(NOT_FOUND_SCHEDULE));
         isOwner(userId, schedule.getWriter().getId());
         schedule.update(request);
         scheduleRepository.save(schedule);
@@ -47,7 +54,8 @@ public class ScheduleService {
 
     public ScheduleDeleteResponse deleteSchedule(long userId, long scheduleId) {
 
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new CustomException(NOT_FOUND_SCHEDULE));
         isOwner(userId, schedule.getWriter().getId());
         scheduleRepository.delete(schedule);
         ScheduleDto dto = ScheduleDto.from(schedule);
@@ -57,15 +65,18 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public ScheduleReadResponse getSchedule(long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new CustomException(NOT_FOUND_SCHEDULE));
         ScheduleDto dto = ScheduleDto.from(schedule);
 
         return ScheduleReadResponse.from(dto);
     }
 
     void isOwner(long nowLoginUserId, long scheduleOwnerId) {
+
         if (nowLoginUserId != scheduleOwnerId) {
-            throw new IllegalArgumentException("현재 로그인한 사용자와 수정 및 삭제 하려는 대상의 소유자가 일치하지 않습니다.");
+            throw new CustomException(NOT_VALID_OWNER);
         }
     }
 }

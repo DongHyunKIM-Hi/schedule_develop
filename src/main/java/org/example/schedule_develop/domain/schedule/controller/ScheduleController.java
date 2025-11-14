@@ -1,5 +1,6 @@
 package org.example.schedule_develop.domain.schedule.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.schedule_develop.common.model.SessionUser;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreateRequest;
@@ -30,7 +31,7 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<ScheduleCreateResponse> createSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
-        @RequestBody ScheduleCreateRequest request) {
+        @Valid @RequestBody ScheduleCreateRequest request) {
         return ResponseEntity.ok(scheduleService.createSchedule(sessionUser.getUserId(), request));
     }
 
