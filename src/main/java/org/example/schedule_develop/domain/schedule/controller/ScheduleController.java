@@ -10,9 +10,14 @@ import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreate
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleUpdateRequest;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleCreateResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleDeleteResponse;
+import org.example.schedule_develop.domain.schedule.model.response.ScheduleReadPageResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleReadResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleUpdateResponse;
 import org.example.schedule_develop.domain.schedule.service.ScheduleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
@@ -65,10 +71,19 @@ public class ScheduleController {
 
         return ResponseEntity.ok(scheduleService.deleteSchedule(sessionUser.getUserId(), scheduleId));
     }
-    
+
     private void checkLogin(SessionUser sessionUser) {
         if (sessionUser == null) {
             throw new CustomException(NOT_AUTHENTICATED);
         }
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<ScheduleReadPageResponse>> getSchedulePage(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "modifiedAt"));
+        return ResponseEntity.ok(scheduleService.getSchedulePage(pageable));
     }
 }

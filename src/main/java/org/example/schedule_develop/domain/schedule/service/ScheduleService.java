@@ -13,10 +13,13 @@ import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreate
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleUpdateRequest;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleCreateResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleDeleteResponse;
+import org.example.schedule_develop.domain.schedule.model.response.ScheduleReadPageResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleReadResponse;
 import org.example.schedule_develop.domain.schedule.model.response.ScheduleUpdateResponse;
 import org.example.schedule_develop.domain.schedule.repository.ScheduleRepository;
 import org.example.schedule_develop.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,6 +75,13 @@ public class ScheduleService {
 
         return ScheduleReadResponse.from(dto);
     }
+
+    @Transactional(readOnly = true)
+    public Page<ScheduleReadPageResponse> getSchedulePage(Pageable pageableq) {
+        Page<Schedule> schedulepage = scheduleRepository.findAll(pageableq);
+        return schedulepage.map(i -> ScheduleReadPageResponse.from(ScheduleDto.from(i), i.getComments().size()));
+    }
+
 
     void isOwner(long nowLoginUserId, long scheduleOwnerId) {
 
