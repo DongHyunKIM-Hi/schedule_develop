@@ -1,7 +1,10 @@
 package org.example.schedule_develop.domain.schedule.controller;
 
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_AUTHENTICATED;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.schedule_develop.common.exception.CustomException;
 import org.example.schedule_develop.common.model.SessionUser;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleCreateRequest;
 import org.example.schedule_develop.domain.schedule.model.requset.ScheduleUpdateRequest;
@@ -32,6 +35,9 @@ public class ScheduleController {
     public ResponseEntity<ScheduleCreateResponse> createSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
         @Valid @RequestBody ScheduleCreateRequest request) {
+
+        checkLogin(sessionUser);
+
         return ResponseEntity.ok(scheduleService.createSchedule(sessionUser.getUserId(), request));
     }
 
@@ -47,6 +53,9 @@ public class ScheduleController {
     public ResponseEntity<ScheduleUpdateResponse> updateSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser, @PathVariable Long scheduleId,
         @RequestBody ScheduleUpdateRequest request) {
+
+        checkLogin(sessionUser);
+
         return ResponseEntity.ok(scheduleService.updateSchedule(sessionUser.getUserId(), scheduleId, request));
     }
 
@@ -55,6 +64,16 @@ public class ScheduleController {
     public ResponseEntity<ScheduleDeleteResponse> deleteSchedule(
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
         @PathVariable Long scheduleId) {
+        
+        checkLogin(sessionUser);
+
         return ResponseEntity.ok(scheduleService.deleteSchedule(sessionUser.getUserId(), scheduleId));
+    }
+
+
+    private void checkLogin(SessionUser sessionUser) {
+        if (sessionUser == null) {
+            throw new CustomException(NOT_AUTHENTICATED);
+        }
     }
 }

@@ -1,8 +1,11 @@
 package org.example.schedule_develop.domain.user.controller;
 
+import static org.example.schedule_develop.common.exception.ErrorMessage.NOT_AUTHENTICATED;
+
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.schedule_develop.common.exception.CustomException;
 import org.example.schedule_develop.common.model.SessionUser;
 import org.example.schedule_develop.domain.user.model.request.LoginRequest;
 import org.example.schedule_develop.domain.user.model.request.UserCreateRequest;
@@ -45,12 +48,18 @@ public class UserController {
     public ResponseEntity<UserUpdateResponse> updateUser(@PathVariable Long userId,
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser,
         @RequestBody UserUpdateRequest request) {
+
+        checkLogin(sessionUser);
+
         return ResponseEntity.ok(userService.updateUser(sessionUser.getUserId(), userId, request));
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable Long userId,
         @SessionAttribute(name = "loginUser", required = false) SessionUser sessionUser) {
+
+        checkLogin(sessionUser);
+
         return ResponseEntity.ok(userService.deleteUser(sessionUser.getUserId(), userId));
     }
 
@@ -73,5 +82,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    private void checkLogin(SessionUser sessionUser) {
+        if (sessionUser == null) {
+            throw new CustomException(NOT_AUTHENTICATED);
+        }
+    }
 
 }
