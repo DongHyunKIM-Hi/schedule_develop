@@ -71,7 +71,7 @@ public class UserService {
     public SessionUser login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-            .orElseThrow(() -> new CustomException(NOT_FOUND_USER));
+            .orElseThrow(() -> new CustomException(NOT_VALID_LOGIN));
 
         if (!user.getPassword().equals(request.getPassword())) {
             throw new CustomException(NOT_VALID_LOGIN);
@@ -81,7 +81,7 @@ public class UserService {
 
 
     void isOwner(long nowLoginUserId, long userId) {
-        
+
         if (nowLoginUserId != userId) {
             throw new CustomException(NOT_VALID_OWNER);
         }
